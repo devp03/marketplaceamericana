@@ -3,11 +3,18 @@ require_once "../includes/conexion.php";
 session_start();
 
 $mensaje = "";
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $correo = $_POST["correo"];
     $contraseña = $_POST["contraseña"];
 
+    // Validación especial para admin (usando correo válido)
+    if ($correo === "admin@admin.com" && $contraseña === "admin") {
+        $_SESSION["admin"] = true;
+        header("Location: usuarios.php");
+        exit;
+    }
+
+    // Validación normal para usuarios
     $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE correo = ?");
     $stmt->execute([$correo]);
     $usuario = $stmt->fetch();
