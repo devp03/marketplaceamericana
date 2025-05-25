@@ -24,6 +24,8 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $publicaciones = $stmt->fetchAll();
 
+
+
 ?>
 
 <!DOCTYPE html>
