@@ -1,7 +1,7 @@
 <?php
 require_once "../includes/conexion.php";
 session_start();
-
+include '../includes/header.php';
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.php");
     exit;
@@ -54,5 +54,7 @@ $mis_publicaciones = $stmt->fetchAll();
     <?php endforeach; ?>
 
     <br><a href="dashboard.php">← Volver al panel</a>
+    <?php include '../includes/footer.php'; ?>
+
 </body>
 </html>

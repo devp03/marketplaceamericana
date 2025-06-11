@@ -16,7 +16,7 @@ if (!$publicacion_id || !$otro_usuario_id) {
     exit;
 }
 
-// Verificamos que el usuario tenga relación con esta publicación
+// Verificar que exista la publicación
 $stmt = $pdo->prepare("SELECT * FROM publicaciones WHERE id = ?");
 $stmt->execute([$publicacion_id]);
 $pub = $stmt->fetch();
@@ -32,10 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($mensaje)) {
         $stmt = $pdo->prepare("INSERT INTO mensajes (publicacion_id, emisor_id, receptor_id, mensaje) VALUES (?, ?, ?, ?)");
         $stmt->execute([$publicacion_id, $usuario_id, $otro_usuario_id, $mensaje]);
+        header("Location: conversacion.php?pub_id=$publicacion_id&con=$otro_usuario_id");
+        exit;
     }
 }
 
-// Obtener historial de mensajes entre ambos usuarios para esta publicación
+// Obtener mensajes
 $stmt = $pdo->prepare("SELECT m.*, u.nombre AS emisor FROM mensajes m
                        JOIN usuarios u ON m.emisor_id = u.id
                        WHERE m.publicacion_id = ?
@@ -50,42 +52,84 @@ $mensajes = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <title>Chat</title>
+    <link rel="stylesheet" href="estilo.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
         .chat-box {
             border: 1px solid #ccc;
-            padding: 10px;
+            padding: 12px;
             height: 300px;
-            overflow-y: scroll;
-            background-color: #f9f9f9;
+            overflow-y: auto;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            margin-bottom: 15px;
         }
         .mensaje {
-            margin-bottom: 10px;
+            margin: 8px 0;
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            font-size: 0.95em;
+            clear: both;
         }
-        .emisor {
-            font-weight: bold;
+        .mio {
+            background-color: #e7f1ff;
+            float: right;
+            text-align: right;
+        }
+        .otro {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            float: left;
+            text-align: left;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: auto;
         }
     </style>
+    <script>
+        function mantenerScroll() {
+            const box = document.querySelector('.chat-box');
+            const isAtBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 10;
+
+            fetch("ver_mensajes.php?publicacion_id=<?= $publicacion_id; ?>&otro_id=<?= $otro_usuario_id; ?>")
+                .then(response => response.text())
+                .then(html => {
+                    box.innerHTML = html;
+                    if (isAtBottom) {
+                        box.scrollTop = box.scrollHeight;
+                    }
+                });
+        }
+
+        setInterval(mantenerScroll, 3000);
+        window.onload = mantenerScroll;
+    </script>
 </head>
 <body>
-    <h2>💬 Chat sobre: <?= htmlspecialchars($pub['titulo']); ?></h2>
+    <?php include "../includes/header.php"; ?>
 
-    <div class="chat-box">
-        <?php foreach ($mensajes as $msg): ?>
-            <div class="mensaje">
-                <span class="emisor"><?= htmlspecialchars($msg['emisor']); ?>:</span>
-                <?= htmlspecialchars($msg['mensaje']); ?>
-            </div>
-        <?php endforeach; ?>
+    <div class="chat-container">
+        <h2 style="text-align: center;">💬 Chat sobre: <?= htmlspecialchars($pub['titulo']); ?></h2>
+
+        <div class="chat-box" id="chat-box">
+            <?php foreach ($mensajes as $msg): ?>
+                <div class="mensaje <?= $msg['emisor_id'] == $usuario_id ? 'mio' : 'otro'; ?>">
+                    <strong><?= htmlspecialchars($msg['emisor']); ?>:</strong><br>
+                    <?= htmlspecialchars($msg['mensaje']); ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <form method="POST" class="form-chat">
+            <input type="text" name="mensaje" placeholder="Escribe tu mensaje..." required>
+            <button type="submit">Enviar</button>
+        </form>
+
+        <p style="text-align:center;"><a href="chat.php">← Volver a chats</a></p>
     </div>
 
-    <form method="POST">
-        <textarea name="mensaje" placeholder="Escribe tu mensaje..." required style="width:100%; height:60px;"></textarea><br>
-        <button type="submit">Enviar</button>
-    </form>
-
-    <br><a href="chat.php">← Volver a chats</a>
+    <?php include "../includes/footer.php"; ?>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <?php
 require_once "../includes/conexion.php";
 session_start();
+include '../includes/header.php';
 
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.php");
@@ -32,4 +33,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <textarea name="comentario" rows="4" cols="50" required></textarea><br><br>
     <button type="submit">Enviar Calificación</button>
 </form>
+<?php include '../includes/footer.php'; ?>
 

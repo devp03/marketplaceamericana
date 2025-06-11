@@ -1,6 +1,7 @@
 </main>
-<footer style="text-align: center; padding: 15px; background: #e9ecef;">
-    <p>© <?php echo date("Y"); ?> Marketplace Universitario</p>
-</footer>
+<footer>
+    © 2025 Marketplace Universitario - Desarrollado por el grupo 3 |
+    <a href="https://unimarketua.blogspot.com/2025/05/un-marketplace-universitario.html">Contáctenos</a>
+  </footer>
 </body>
 </html>

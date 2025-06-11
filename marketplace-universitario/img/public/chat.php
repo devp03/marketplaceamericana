@@ -1,7 +1,7 @@
 <?php
 require_once "../includes/conexion.php";
 session_start();
-
+include '../includes/header.php';
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.php");
     exit;
@@ -9,9 +9,7 @@ if (!isset($_SESSION['usuario_id'])) {
 
 $usuario_id = $_SESSION['usuario_id'];
 
-// Separar chats en dos categorías
-
-// 🟢 Publicaciones en venta (yo soy el vendedor)
+// Chats donde soy vendedor
 $stmt_vendedor = $pdo->prepare("
     SELECT DISTINCT p.id AS publicacion_id, p.titulo, u.id AS otro_id, u.nombre 
     FROM publicaciones p
@@ -22,7 +20,7 @@ $stmt_vendedor = $pdo->prepare("
 $stmt_vendedor->execute([$usuario_id]);
 $vendedorChats = $stmt_vendedor->fetchAll();
 
-// 🟠 Publicaciones de interés (yo soy el comprador)
+// Chats donde soy comprador
 $stmt_comprador = $pdo->prepare("
     SELECT DISTINCT p.id AS publicacion_id, p.titulo, u.id AS otro_id, u.nombre 
     FROM reservas r
@@ -33,7 +31,6 @@ $stmt_comprador = $pdo->prepare("
 $stmt_comprador->execute([$usuario_id]);
 $compradorChats = $stmt_comprador->fetchAll();
 
-// Capturar parámetros desde la URL
 $publicacion_id = $_GET['publicacion_id'] ?? null;
 $otro_id = $_GET['otro_id'] ?? null;
 $mensajes = [];
@@ -43,16 +40,20 @@ if ($publicacion_id && $otro_id) {
     $stmt2->execute([$publicacion_id, $usuario_id, $otro_id, $otro_id, $usuario_id]);
     $mensajes = $stmt2->fetchAll();
 
-    // Marcar como leídos
     $marcarLeidos = $pdo->prepare("UPDATE mensajes SET leido = 1 WHERE publicacion_id = ? AND destinatario_id = ? AND leido = 0");
     $marcarLeidos->execute([$publicacion_id, $usuario_id]);
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Mis Chats</title>
+    <link rel="stylesheet" href="estilo.css">
+    <style>
+        <?php include "../includes/chat_estilo.css"; ?>
+    </style>
     <script>
         function autoRefresh() {
             const input = document.querySelector('input[name="mensaje"]');
@@ -61,17 +62,14 @@ if ($publicacion_id && $otro_id) {
             }
         }
         setInterval(autoRefresh, 3000);
-
-        function scrollToBottom() {
+        window.onload = () => {
             const chatBox = document.getElementById('chat-box');
-            if (chatBox) {
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-        }
-        window.onload = scrollToBottom;
+            if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+        };
     </script>
 </head>
 <body>
+<main>
     <h2>📨 Mis Conversaciones</h2>
 
     <h3>📦 Publicaciones en venta</h3>
@@ -80,20 +78,19 @@ if ($publicacion_id && $otro_id) {
         $stmtNotif = $pdo->prepare("SELECT COUNT(*) FROM mensajes WHERE publicacion_id = ? AND remitente_id = ? AND destinatario_id = ? AND leido = 0");
         $stmtNotif->execute([$c['publicacion_id'], $c['otro_id'], $usuario_id]);
         $notificacion = $stmtNotif->fetchColumn();
+        $stmtCal = $pdo->prepare("SELECT ROUND(AVG(puntuacion),1) FROM calificaciones WHERE evaluado_id = ?");
+        $stmtCal->execute([$c['otro_id']]);
+        $calif = $stmtCal->fetchColumn();
         ?>
-        <a href="?publicacion_id=<?php echo $c['publicacion_id']; ?>&otro_id=<?php echo $c['otro_id']; ?>">
-            <?php
-                $stmtCal = $pdo->prepare("SELECT ROUND(AVG(puntuacion),1) FROM calificaciones WHERE evaluado_id = ?");
-                $stmtCal->execute([$c['otro_id']]);
-                $calif = $stmtCal->fetchColumn();
-            ?>
-💬 <?php echo htmlspecialchars($c['titulo']) . " con " . htmlspecialchars($c['nombre']); ?>
-<span style="font-size: 0.9em; color: #555;">⭐ <?php echo $calif ?: 'Sin calificación'; ?></span>
-
-            <?php if ($notificacion > 0): ?>
-                <strong style="color: red;">(<?php echo $notificacion; ?> nuevo)</strong>
-            <?php endif; ?>
-        </a><br>
+        <div class="chat-link">
+            <a href="?publicacion_id=<?php echo $c['publicacion_id']; ?>&otro_id=<?php echo $c['otro_id']; ?>">
+                💬 <?php echo htmlspecialchars($c['titulo']) . " con " . htmlspecialchars($c['nombre']); ?>
+                <span>⭐ <?php echo $calif ?: 'Sin calificación'; ?></span>
+                <?php if ($notificacion > 0): ?>
+                    <span class="badge"><?php echo $notificacion; ?></span>
+                <?php endif; ?>
+            </a>
+        </div>
     <?php endforeach; ?>
 
     <h3>🛒 Publicaciones de interés</h3>
@@ -102,52 +99,48 @@ if ($publicacion_id && $otro_id) {
         $stmtNotif = $pdo->prepare("SELECT COUNT(*) FROM mensajes WHERE publicacion_id = ? AND remitente_id = ? AND destinatario_id = ? AND leido = 0");
         $stmtNotif->execute([$c['publicacion_id'], $c['otro_id'], $usuario_id]);
         $notificacion = $stmtNotif->fetchColumn();
+        $stmtCal = $pdo->prepare("SELECT ROUND(AVG(puntuacion),1) FROM calificaciones WHERE evaluado_id = ?");
+        $stmtCal->execute([$c['otro_id']]);
+        $calif = $stmtCal->fetchColumn();
         ?>
-        <a href="?publicacion_id=<?php echo $c['publicacion_id']; ?>&otro_id=<?php echo $c['otro_id']; ?>">
-            <?php
-                $stmtCal = $pdo->prepare("SELECT ROUND(AVG(puntuacion),1) FROM calificaciones WHERE evaluado_id = ?");
-                $stmtCal->execute([$c['otro_id']]);
-                $calif = $stmtCal->fetchColumn();
-            ?>
-💬 <?php echo htmlspecialchars($c['titulo']) . " con " . htmlspecialchars($c['nombre']); ?>
-<span style="font-size: 0.9em; color: #555;">⭐ <?php echo $calif ?: 'Sin calificación'; ?></span>
-
-            <?php if ($notificacion > 0): ?>
-                <strong style="color: red;">(<?php echo $notificacion; ?> nuevo)</strong>
-            <?php endif; ?>
-        </a><br>
+        <div class="chat-link">
+            <a href="?publicacion_id=<?php echo $c['publicacion_id']; ?>&otro_id=<?php echo $c['otro_id']; ?>">
+                💬 <?php echo htmlspecialchars($c['titulo']) . " con " . htmlspecialchars($c['nombre']); ?>
+                <span>⭐ <?php echo $calif ?: 'Sin calificación'; ?></span>
+                <?php if ($notificacion > 0): ?>
+                    <span class="badge"><?php echo $notificacion; ?></span>
+                <?php endif; ?>
+            </a>
+        </div>
     <?php endforeach; ?>
 
-    <!-- Historial y formulario -->
     <?php if ($publicacion_id && $otro_id): ?>
         <h3>💬 Conversación</h3>
-        <div id="chat-box" style="border:1px solid #ccc; padding:10px; height:200px; overflow-y:auto;">
+        <div class="chat-box" id="chat-box">
             <?php foreach ($mensajes as $msg): ?>
-                <div style="text-align: <?php echo $msg['remitente_id'] == $usuario_id ? 'right' : 'left'; ?>; margin: 5px;">
-                    <span style="background: <?php echo $msg['remitente_id'] == $usuario_id ? '#dcf8c6' : '#fff'; ?>; padding: 5px 10px; border: 1px solid #ccc; border-radius: 10px; display: inline-block;">
-                        <?php echo htmlspecialchars($msg['mensaje']); ?>
-                    </span>
+                <div class="mensaje <?php echo $msg['remitente_id'] == $usuario_id ? 'mio' : 'otro'; ?>">
+                    <?php echo htmlspecialchars($msg['mensaje']); ?>
                 </div>
             <?php endforeach; ?>
         </div>
 
-        <!-- Formulario para enviar -->
-        <form method="POST" action="enviar_mensaje.php">
+        <form method="POST" action="enviar_mensaje.php" class="form-chat">
             <input type="hidden" name="publicacion_id" value="<?php echo $publicacion_id; ?>">
             <input type="hidden" name="otro_id" value="<?php echo $otro_id; ?>">
             <input type="text" name="mensaje" placeholder="Escribe un mensaje..." required>
             <button type="submit">Enviar</button>
         </form>
-        <!-- Formulario para terminar mensaje -->
-        <form method="POST" action="terminar_chat.php">
-    <input type="hidden" name="publicacion_id" value="<?php echo $publicacion_id; ?>">
-    <input type="hidden" name="otro_id" value="<?php echo $otro_id; ?>">
-    <button type="submit">🛑 Terminar Chat</button>
-        </form>
 
+        <form method="POST" action="terminar_chat.php" style="margin-top:10px;">
+            <input type="hidden" name="publicacion_id" value="<?php echo $publicacion_id; ?>">
+            <input type="hidden" name="otro_id" value="<?php echo $otro_id; ?>">
+            <button type="submit" style="background:#e74c3c; color:white;">🛑 Terminar Chat</button>
+        </form>
     <?php endif; ?>
 
     <hr>
     <a href="dashboard.php"><button>🏠 Volver al Panel Principal</button></a>
+</main>
+<?php include '../includes/footer.php'; ?>
 </body>
 </html>
