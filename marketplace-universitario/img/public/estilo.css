@@ -1,0 +1,363 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #f1f3f6;
+}
+
+/* ENCABEZADO SUPERIOR */
+header {
+    background-color: #1877f2;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+header nav a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    transition: color 0.2s ease-in-out;
+}
+
+header nav a:hover {
+    color: #cce4ff;
+    text-decoration: underline;
+}
+
+/* CONTENIDO PRINCIPAL */
+main {
+    padding: 20px;
+}
+
+/* TÍTULOS */
+h2 {
+    color: #222;
+    font-size: 22px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-align: center;
+}
+
+h3 {
+    color: #333;
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* TARJETAS DE PUBLICACIONES */
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    padding: 15px;
+    margin: 10px;
+    text-align: center;
+    max-width: 250px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.card h3 {
+    margin: 10px 0 5px 0;
+    font-size: 18px;
+}
+
+.card p {
+    color: #555;
+    font-size: 14px;
+}
+
+.card .precio {
+    color: #1877f2;
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+}
+
+/* PIE DE PÁGINA */
+footer {
+    text-align: center;
+    padding: 15px;
+    background: #e9ecef;
+    margin-top: 30px;
+    font-size: 14px;
+}
+
+/* BOTONES */
+button {
+    background-color: #1877f2;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* ENLACES */
+a {
+    color: #1877f2;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+.formulario {
+    background: white;
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.07);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.formulario form {
+    display: flex;
+    flex-direction: column;
+}
+
+.formulario input[type="text"],
+.formulario input[type="number"],
+.formulario input[type="file"],
+.formulario textarea {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.formulario textarea {
+    resize: vertical;
+    height: 80px;
+}
+
+.formulario button {
+    background-color: #1877f2;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.formulario button:hover {
+    background-color: #155fc1;
+}
+
+.formulario a {
+    color: #1877f2;
+    text-decoration: none;
+}
+
+.formulario a:hover {
+    text-decoration: underline;
+}
+/* --- Chat general --- */
+main {
+    max-width: 800px;
+    margin: auto;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 20px;
+}
+
+.chat-link {
+    background: #f1f1f1;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.chat-link a {
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.chat-link .badge {
+    background-color: red;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+/* --- Chatbox --- */
+.chat-box {
+    border: 1px solid #ccc;
+    background: #fafafa;
+    padding: 10px;
+    height: 250px;
+    overflow-y: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.mensaje {
+    padding: 8px 12px;
+    margin: 5px 0;
+    display: inline-block;
+    border-radius: 16px;
+    max-width: 75%;
+    word-wrap: break-word;
+    font-size: 0.95em;
+}
+
+.mio {
+    background-color: #cce4ff; /* celeste */
+    align-self: flex-end;
+    float: right;
+    clear: both;
+}
+
+.otro {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    float: left;
+    clear: both;
+}
+
+/* --- Formulario de mensaje --- */
+.form-chat {
+    display: flex;
+    gap: 10px;
+}
+
+.form-chat input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 1em;
+}
+
+.form-chat button {
+    background-color: #1f60c0;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.form-chat button:hover {
+    background-color: #45a049;
+}
+
+/* === CHAT === */
+.chat-box {
+            border: 1px solid #ccc;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .mensaje {
+            margin: 8px 0;
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            font-size: 0.95em;
+        }
+        .mensaje.enviado {
+            background-color: #e7f1ff;
+            align-self: flex-end;
+            text-align: right;
+        }
+        .mensaje.recibido {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        .chat-contenedor {
+            display: flex;
+            flex-direction: column;
+        }
+        form {
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        /* === ENCABEZADO GENERAL === */
+.encabezado {
+    background-color: #1877f2;
+    padding: 15px 30px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.encabezado-logo {
+    display: flex;
+    align-items: center;
+}
+
+.encabezado-logo img {
+    height: 100px;
+    margin-right: 10px;
+}
+
+.encabezado-logo h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.encabezado-nav a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.encabezado-nav a:hover {
+    color: #cce4ff;
+    text-decoration: underline;
+}
+
+/* MAIN */
+main {
+    padding: 20px;
+}
